@@ -1,31 +1,31 @@
-# StapVpSim — distribuição ofuscada
+# StapVpSim — arquivo único ofuscado
 
-Contém apenas o bundle ofuscado e seu carregador. O repositório de desenvolvimento é mantido separadamente.
+`TutorialAutopilot.bundle.lua` contém os 19 módulos, o início automático e a retomada por URL. Toda essa implementação está no arquivo ofuscado. O repositório privado de desenvolvimento permanece separado e não foi alterado.
 
-## Carregar
+## Executar
 
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/rhgab1/StapVpSim-obfuscated/main/TutorialAutopilot.bundle.lua"))()
 ```
 
-O comportamento original foi preservado: carregar manualmente prepara o controlador e o deixa pausado. Para iniciar o fluxo:
+Esse único comando carrega o controlador e inicia o fluxo assim que perfil, personagem e mapa estiverem prontos. Também é possível executar diretamente o conteúdo do arquivo Lua no ambiente compatível. Não é necessária uma chamada separada de `Start()`.
 
-```lua
-shared.TapSimulatorTutorialAutopilot:Start()
-```
+## Troca de servidor
 
-Para parar:
+Quando o executor oferece `queue_on_teleport`, `queueonteleport` ou `queue_on_tp`, o arquivo arma a retomada. Depois da troca, aguarda 30 segundos e baixa novamente este mesmo arquivo pela URL pública. São até seis tentativas, com cinco segundos entre elas. Não depende de manifesto nem de partes salvas no disco. Sem suporte à fila, execute novamente o comando após a troca.
+
+Para parar manualmente:
 
 ```lua
 shared.TapSimulatorTutorialAutopilot:Stop()
 ```
 
-## Compatibilidade e limites
+## Compatibilidade e validação
 
-- Requer ambiente Luau com as APIs usadas no projeto original, incluindo `game:HttpGet`, `loadstring`, `setfenv` e `bit32`.
-- A retomada após teleport mantém a dependência original dos arquivos locais `mcp/StapVpSimTutorialAutopilot.manifest` e suas partes; este carregamento por URL não instala esses arquivos.
-- A ofuscação renomeia variáveis e funções locais, remove comentários e codifica o conteúdo. Ela dificulta a leitura, mas não impede a recuperação do código nem protege segredos.
-- Os 19 módulos, o bundle e o carregador foram compilados com Luau. O decodificador foi testado byte a byte, incluindo argumentos, retornos e erros.
-- O teste offline `Test-StepTracker.luau` do projeto original já falha na linha 55; a versão transformada apresenta a mesma falha. Não houve teste dentro do Roblox.
+- Requer ambiente Luau com as APIs do projeto, incluindo `game:HttpGet`, `loadstring`, `setfenv` e `bit32`. A retomada também requer conexão à internet e suporte à fila de teleport.
+- A lógica dos 19 módulos de jogo foi preservada. Apenas o início e o carregamento após teleport foram adaptados para a distribuição em arquivo único.
+- Compilação, equivalência das instruções dos módulos e decodificação byte a byte foram verificadas. Início automático, espera pela prontidão, substituição da execução anterior e retomada com falhas de rede/compilação/execução foram testados com simulação local.
+- O teste offline `Test-StepTracker.luau` original já falha na linha 55; a transformação mantém a mesma falha. Não houve novo teste dentro do Roblox.
+- Ofuscação dificulta a leitura, mas não impede recuperar o código nem protege segredos.
 
 Ferramenta de transformação: [darklua](https://darklua.com/docs/rules/rename_variables/).
